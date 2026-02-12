@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>待ち時間 管理画面</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      background: linear-gradient(135deg, #a8edea, #fed6e3); /* 明るい背景 */
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      margin-bottom: 25px;
+    }
+
+    input[type="number"] {
+      font-size: 20px;
+      width: 100px;
+      text-align: center;
+    }
+
+    .status-select {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px 25px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background: #4cbf77;
+      color: white;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 15px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>待ち時間 管理</h1>
+
+    <p>
+      待ち時間：
+      <input type="number" id="minutes" min="0"> 分
+    </p>
+
+    <div class="status-select">
+      <strong>混雑状況</strong>
+      <label>
+        <input type="radio" name="status" value="low" checked>
+        空いている
+      </label>
+      <label>
+        <input type="radio" name="status" value="mid">
+        やや混雑
+      </label>
+      <label>
+        <input type="radio" name="status" value="high">
+        混雑
+      </label>
+    </div>
+
+    <button onclick="save()">保存</button>
+    <p id="message"></p>
+  </div>
+
+  <script>
+    function save() {
+      const minutes = document.getElementById("minutes").value;
+      const status =
+        document.querySelector('input[name="status"]:checked').value;
+
+      if (minutes === "") {
+        document.getElementById("message").textContent = "待ち時間を入力してください";
+        return;
+      }
+
+      // localStorageに保存
+      localStorage.setItem("waitTime", minutes);
+      localStorage.setItem("status", status);
+      localStorage.setItem("updated", new Date().toLocaleTimeString());
+
+      document.getElementById("message").textContent =
+        "保存しました（表示画面に反映されます）";
+    }
+
+    // ページ読み込み時に入力欄に反映
+    window.onload = function() {
+      const savedMinutes = localStorage.getItem("waitTime");
+      const savedStatus = localStorage.getItem("status");
+
+      if (savedMinutes) {
+        document.getElementById("minutes").value = savedMinutes;
+      }
+
+      if (savedStatus) {
+        const radios = document.querySelectorAll('input[name="status"]');
+        radios.forEach(radio => {
+          if (radio.value === savedStatus) radio.checked = true;
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>
